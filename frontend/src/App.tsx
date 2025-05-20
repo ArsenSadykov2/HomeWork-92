@@ -1,6 +1,10 @@
 import './App.css'
 import {useEffect, useRef, useState} from "react";
 import type {ChatMessage, IncomingMessage} from "./types";
+import AppToolbar from "./components/Toolbar/Toolbar.tsx";
+import {Container, CssBaseline, Typography} from "@mui/material";
+import {Route, Routes} from "react-router-dom";
+import Login from "./features/Users/Login.tsx";
 
 const App = () => {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -89,7 +93,20 @@ const App = () => {
 
   return (
     <>
-        {chat}
+        <CssBaseline/>
+        <header>
+            <AppToolbar/>
+        </header>
+        <main>
+            <Container maxWidth="xl">
+                <Routes>
+                    <Route path="/" element={chat}/>
+                    <Route path="/login" element={<Login/>}/>
+
+                    <Route path="*" element={<Typography variant="h4">Not found page</Typography>}/>
+                </Routes>
+            </Container>
+        </main>
     </>
   )
 };
