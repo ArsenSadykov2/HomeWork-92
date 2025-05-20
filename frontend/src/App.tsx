@@ -1,9 +1,21 @@
-import './App.css'
-import {useEffect, useRef, useState} from "react";
-import type {ChatMessage, IncomingMessage, User} from "./types";
-import AppToolbar from "./components/Toolbar/Toolbar.tsx";
-import {Container, CssBaseline, Typography, Paper, List, ListItem, ListItemText, Box, Grid, TextField, Button} from "@mui/material";
-import {Route, Routes} from "react-router-dom";
+import './App.css';
+import { useEffect, useRef, useState } from 'react';
+import type { ChatMessage, User } from './types';
+import AppToolbar from './components/Toolbar/Toolbar.tsx';
+import {
+    Container,
+    CssBaseline,
+    Typography,
+    Paper,
+    List,
+    ListItem,
+    ListItemText,
+    Box,
+    Grid,
+    TextField,
+    Button
+} from '@mui/material';
+import { Route, Routes } from 'react-router-dom';
 
 const App = () => {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -17,47 +29,49 @@ const App = () => {
     useEffect(() => {
         ws.current = new WebSocket('ws://localhost:8000/chat');
 
-        ws.current.onclose = () => console.log('ws closed');
+        ws.current.onclose = () => console.log('WebSocket closed');
 
         ws.current.onmessage = (event) => {
-            const decodedMessage = JSON.parse(event.data) as IncomingMessage;
+            const decodedMessage = JSON.parse(event.data);
 
-            if(decodedMessage.type === "NEW_MESSAGE") {
-                setMessages(prevState => [decodedMessage.payload, ...prevState]);
-            } else if (decodedMessage.type === "SET_USERNAME") {
+            if (decodedMessage.type === 'NEW_MESSAGE') {
+                setMessages(prev => [decodedMessage.payload, ...prev]);
+            } else if (decodedMessage.type === 'USER_LIST') {
                 setActiveUsers(decodedMessage.payload);
             }
         };
 
         return () => {
-            if(ws.current) {
+            if (ws.current) {
                 ws.current.close();
             }
-        }
+        };
     }, []);
 
     const sendMessage = (e: React.FormEvent) => {
         e.preventDefault();
+        if (!ws.current || !messageInput.trim()) return;
 
-        if(!ws.current || !messageInput.trim()) return;
-
-        ws.current.send(JSON.stringify({
-            type: "SEND_MESSAGE",
-            payload: messageInput,
-        }));
+        ws.current.send(
+            JSON.stringify({
+                type: 'SEND_MESSAGE',
+                payload: messageInput
+            })
+        );
 
         setMessageInput('');
     };
 
     const setUsername = (e: React.FormEvent) => {
         e.preventDefault();
+        if (!ws.current || !usernameInput.trim()) return;
 
-        if(!ws.current || !usernameInput.trim()) return;
-
-        ws.current.send(JSON.stringify({
-            type: "SET_USERNAME",
-            payload: usernameInput,
-        }));
+        ws.current.send(
+            JSON.stringify({
+                type: 'SET_USERNAME',
+                payload: usernameInput
+            })
+        );
 
         setIsLoggedIn(true);
     };
@@ -72,7 +86,7 @@ const App = () => {
                     <List>
                         {activeUsers.map((user, index) => (
                             <ListItem key={index}>
-                                <ListItemText primary={user} />
+                                <ListItemText primary={user.username} />
                             </ListItem>
                         ))}
                     </List>
@@ -112,7 +126,7 @@ const App = () => {
         </Grid>
     );
 
-    if(!isLoggedIn) {
+    if (!isLoggedIn) {
         chat = (
             <Box sx={{ maxWidth: 400, mx: 'auto', mt: 10 }}>
                 <Paper elevation={3} sx={{ p: 4 }}>
@@ -144,15 +158,15 @@ const App = () => {
 
     return (
         <>
-            <CssBaseline/>
+            <CssBaseline />
             <header>
-                <AppToolbar/>
+                <AppToolbar />
             </header>
             <main>
                 <Container maxWidth="xl" sx={{ mt: 4 }}>
                     <Routes>
-                        <Route path="/" element={chat}/>
-                        <Route path="*" element={<Typography variant="h4">Not found page</Typography>}/>
+                        <Route path="/" element={chat} />
+                        <Route path="*" element={<Typography variant="h4">Not found page</Typography>} />
                     </Routes>
                 </Container>
             </main>
