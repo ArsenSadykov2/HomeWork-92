@@ -13,4 +13,5 @@ export type IncomingMessage =
 
 export type OutgoingMessage =
     | { type: 'NEW_MESSAGE'; payload: ChatMessage }
-    | { type: 'USER_LIST'; payload: User[] };
+    | { type: 'USER_LIST'; payload: User[] }
+    | { type: 'MESSAGE_HISTORY'; payload: ChatMessage[] };

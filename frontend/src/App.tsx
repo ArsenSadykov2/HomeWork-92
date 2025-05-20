@@ -38,6 +38,8 @@ const App = () => {
                 setMessages(prev => [decodedMessage.payload, ...prev]);
             } else if (decodedMessage.type === 'USER_LIST') {
                 setActiveUsers(decodedMessage.payload);
+            } else if (decodedMessage.type === 'MESSAGE_HISTORY') {
+                setMessages([...decodedMessage.payload].reverse());
             }
         };
 
@@ -47,6 +49,7 @@ const App = () => {
             }
         };
     }, []);
+
 
     const sendMessage = (e: React.FormEvent) => {
         e.preventDefault();
