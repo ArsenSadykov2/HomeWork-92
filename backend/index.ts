@@ -17,13 +17,12 @@ interface IncomingMessages {
     payload: string;
 }
 
-let username = "Anonymous";
-
 const router = express.Router();
 wsInstance.applyTo(router);
 
 router.ws('/chat', (ws, req) => {
     console.log('Client connection');
+    let username = "Anonymous";
 
     connectedClients.push(ws);
     console.log('Total clients: ' + connectedClients.length);
@@ -38,7 +37,7 @@ router.ws('/chat', (ws, req) => {
                 connectedClients.forEach(clientWs => {
                     clientWs.send(JSON.stringify({
                         type: "NEW_MESSAGE",
-                        payload: `${username}: ${decodedMessage.payload}`
+                        payload: {username: username, text: decodedMessage.payload}
                     }));
                 })
             } else if(decodedMessage.type === "SET_USERNAME"){
