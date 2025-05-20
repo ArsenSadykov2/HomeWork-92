@@ -12,6 +12,13 @@ app.use(cors());
 
 const connectedClients: WebSocket[] = [];
 
+interface IncomingMessages {
+    type: string;
+    payload: string;
+}
+
+let username = "Anonymous";
+
 const router = express.Router();
 wsInstance.applyTo(router);
 
@@ -21,14 +28,22 @@ router.ws('/chat', (ws, req) => {
     connectedClients.push(ws);
     console.log('Total clients: ' + connectedClients.length);
 
+
+
     ws.on('message', (message) => {
         try{
-            const decodedMessage = JSON.parse(message.toString());
-
-            console.log(message);
-            connectedClients.forEach(clientWs => {
-                clientWs.send(JSON.stringify(decodedMessage.user + ": " + decodedMessage.message));
-            })
+            const decodedMessage = JSON.parse(message.toString()) as IncomingMessages;
+            console.log(decodedMessage);
+            if(decodedMessage.type === "SEND_MESSAGE"){
+                connectedClients.forEach(clientWs => {
+                    clientWs.send(JSON.stringify({
+                        type: "NEW_MESSAGE",
+                        payload: `${username}: ${decodedMessage.payload}`
+                    }));
+                })
+            } else if(decodedMessage.type === "SET_USERNAME"){
+                username = decodedMessage.payload;
+            }
         } catch (e) {
             ws.send(JSON.stringify({error: "Invalid message format"}))
         }
