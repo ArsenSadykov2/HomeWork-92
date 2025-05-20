@@ -1,10 +1,6 @@
 import {AppBar, Container, styled, Toolbar, Typography} from "@mui/material";
 import {NavLink} from "react-router-dom";
 import Grid from "@mui/material/Grid";
-import {useAppSelector} from "../../app/hooks.ts";
-import AnonymousMenu from "./AnonymousMenu.tsx";
-import UserMenu from "./UserMenu.tsx";
-import {selectUser} from "../../features/Users/userSlices.ts";
 
 const Link = styled(NavLink)({
     color: 'inherit',
@@ -15,7 +11,6 @@ const Link = styled(NavLink)({
 });
 
 const AppToolbar = () => {
-    const user = useAppSelector(selectUser);
 
     return (
         <AppBar position="sticky" sx={{
@@ -29,11 +24,6 @@ const AppToolbar = () => {
                         <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
                             <Link to="/">Chat for Users</Link>
                         </Typography>
-                        {user ?
-                            (<UserMenu user={user}/>)
-                            :
-                            (<AnonymousMenu/>)
-                        }
                     </Grid>
                 </Container>
             </Toolbar>
